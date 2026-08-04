@@ -9,6 +9,13 @@ const { Title, Text } = Typography;
 const { RangePicker } = DatePicker;
 const { TextArea } = Input;
 
+// 小计独立组件：必须在顶层调用 Form.useWatch，不能放在 column.render 回调里
+function OrderItemSubtotalCell({ name }) {
+  const q = Form.useWatch(['items', name, 'quantity']);
+  const p = Form.useWatch(['items', name, 'unit_price']);
+  return <Text>¥{((q || 0) * (p || 0)).toFixed(2)}</Text>;
+}
+
 const PLATFORM_OPTIONS = ['1688', '淘宝', '拼多多', '抖音', '微信', '线下', '其他'];
 const EXPRESS_OPTIONS = ['顺丰', '中通', '圆通', '韵达', '其他'];
 
@@ -384,11 +391,9 @@ function ProductItemsTable({ skuList }) {
               { title: '单价', width: 90, render: (_, field) => (
                 <Form.Item name={[field.name, 'unit_price']} noStyle><InputNumber min={0} step={0.01} size="small" style={{ width: 90 }} /></Form.Item>
               )},
-              { title: '小计', width: 90, render: (_, field) => {
-                const q = Form.useWatch(['items', field.name, 'quantity']);
-                const p = Form.useWatch(['items', field.name, 'unit_price']);
-                return <Text>¥{((q || 0) * (p || 0)).toFixed(2)}</Text>;
-              }},
+              { title: '小计', width: 90, render: (_, field) => (
+                <OrderItemSubtotalCell name={field.name} />
+              )},
               { title: '', width: 40, render: (_, field) => <Button type="link" danger size="small" onClick={() => remove(field.name)}>删除</Button> },
             ]} />
           <Button type="dashed" block style={{ marginTop: 8 }} icon={<PlusOutlined />} onClick={() => add({ quantity: 1, unit_price: 0 })}>添加产品</Button>

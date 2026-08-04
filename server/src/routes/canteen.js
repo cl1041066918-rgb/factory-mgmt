@@ -9,8 +9,16 @@ function generateBillNo(db) {
   const today = new Date();
   const dateStr = `${today.getFullYear()}${String(today.getMonth() + 1).padStart(2, '0')}${String(today.getDate()).padStart(2, '0')}`;
   const prefix = `ST-${dateStr}-`;
-  const count = db.prepare("SELECT COUNT(*) as count FROM canteen_bills WHERE bill_no LIKE ?").get(`${prefix}%`).count;
-  return `${prefix}${String(count + 1).padStart(3, '0')}`;
+  // 用 MAX(NNN) + 1 而不是 COUNT + 1，避免删除中间记录后 UNIQUE 冲突
+  const row = db.prepare(
+    "SELECT bill_no FROM canteen_bills WHERE bill_no LIKE ? ORDER BY bill_no DESC LIMIT 1"
+  ).get(`${prefix}%`);
+  let next = 1;
+  if (row && row.bill_no) {
+    const m = row.bill_no.match(/-(\d+)$/);
+    if (m) next = parseInt(m[1], 10) + 1;
+  }
+  return `${prefix}${String(next).padStart(3, '0')}`;
 }
 
 router.get('/', authMiddleware, (req, res) => {
