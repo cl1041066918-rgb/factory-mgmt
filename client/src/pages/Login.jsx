@@ -1,17 +1,10 @@
 import React, { useState } from 'react';
-import { Card, Form, Input, Button, Typography, Alert, Space, Tag } from 'antd';
+import { Card, Form, Input, Button, Typography, Alert } from 'antd';
 import { UserOutlined, LockOutlined, HomeOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import useAuthStore from '../store/auth';
 
 const { Title, Text } = Typography;
-
-const demoAccounts = [
-  { role: '主管理者', username: 'admin', password: 'admin123', color: 'red' },
-  { role: '生产线', username: 'production', password: 'prod123', color: 'blue' },
-  { role: '客服', username: 'service', password: 'service123', color: 'green' },
-  { role: '发货', username: 'shipping', password: 'ship123', color: 'orange' },
-];
 
 export default function Login() {
   const [form] = Form.useForm();
@@ -59,22 +52,6 @@ export default function Login() {
             </Button>
           </Form.Item>
         </Form>
-
-        <div style={{ borderTop: '1px solid #f0f0f0', paddingTop: 16 }}>
-          <Text type="secondary" style={{ fontSize: 12 }}>演示账号（点击快速填充）：</Text>
-          <div style={{ marginTop: 8, display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-            {demoAccounts.map((acc) => (
-              <Tag
-                key={acc.username}
-                color={acc.color}
-                style={{ cursor: 'pointer' }}
-                onClick={() => form.setFieldsValue({ username: acc.username, password: acc.password })}
-              >
-                {acc.role}
-              </Tag>
-            ))}
-          </div>
-        </div>
       </Card>
     </div>
   );
