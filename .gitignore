@@ -28,3 +28,8 @@ Thumbs.db
 # Logs
 *.log
 npm-debug.log*
+
+# Local utility scripts (not needed on server)
+import_sku.py
+parse_sku.py
+sku_import.json

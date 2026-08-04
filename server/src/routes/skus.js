@@ -144,6 +144,21 @@ router.delete('/:id', authMiddleware, requirePermission('sku.manage'), (req, res
   res.json({ message: 'SKU删除成功' });
 });
 
+// 管理员专用：批量清空SKU（绕过库存/历史校验）
+// 仅用于重新初始化SKU编码等管理场景，会同时清空对应的二维码记录
+router.post('/wipe-all', authMiddleware, requirePermission('sku.manage'), (req, res) => {
+  const db = getDB();
+  const result = db.transaction(() => {
+    // 先记下当前所有 SKU 编码以便日志
+    const before = db.prepare('SELECT code FROM skus').all().map(r => r.code);
+    const qrDel = db.prepare('DELETE FROM qr_codes').run();
+    const skuDel = db.prepare('DELETE FROM skus').run();
+    return { sku_deleted: skuDel.changes, qr_deleted: qrDel.changes, codes: before };
+  })();
+  logOperation(req.user.id, req.user.name, 'wipe', 'SKU:全部', null, { sku_deleted: result.sku_deleted, qr_deleted: result.qr_deleted });
+  res.json({ message: `已清空 ${result.sku_deleted} 条SKU`, sku_deleted: result.sku_deleted, qr_deleted: result.qr_deleted });
+});
+
 // 批量导入SKU
 router.post('/import', authMiddleware, requirePermission('sku.manage'), (req, res) => {
   const { items } = req.body;

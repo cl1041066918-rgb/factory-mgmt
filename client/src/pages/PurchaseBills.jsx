@@ -15,6 +15,13 @@ const STATUS_MAP = {
   completed: { label: '已完成', color: 'green' },
 };
 
+// 小计单元格：独立组件以遵守 Hooks 规则
+const SubtotalCell = ({ name }) => {
+  const q = Form.useWatch(['items', name, 'quantity']);
+  const p = Form.useWatch(['items', name, 'unit_price']);
+  return <Text>¥{((q || 0) * (p || 0)).toFixed(2)}</Text>;
+};
+
 export default function PurchaseBills() {
   const [data, setData] = useState([]);
   const [total, setTotal] = useState(0);
@@ -245,11 +252,7 @@ export default function PurchaseBills() {
                       { title: '单价', width: 90, render: (_, field) => (
                         <Form.Item name={[field.name, 'unit_price']} noStyle><InputNumber min={0} step={0.01} size="small" style={{ width: 90 }} /></Form.Item>
                       )},
-                      { title: '小计', width: 90, render: (_, field) => {
-                        const q = Form.useWatch(['items', field.name, 'quantity']);
-                        const p = Form.useWatch(['items', field.name, 'unit_price']);
-                        return <Text>¥{((q || 0) * (p || 0)).toFixed(2)}</Text>;
-                      }},
+                      { title: '小计', width: 90, render: (_, field) => <SubtotalCell name={field.name} /> },
                       { title: '', width: 40, render: (_, field) => <Button type="link" danger size="small" onClick={() => remove(field.name)}>删</Button> },
                     ]} />
                   <Button type="dashed" block style={{ marginTop: 8 }} icon={<PlusOutlined />} onClick={() => add({ quantity: 1, unit_price: 0 })}>添加材料</Button>
