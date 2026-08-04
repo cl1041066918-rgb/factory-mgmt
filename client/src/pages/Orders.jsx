@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Table, Button, Modal, Form, Input, Select, Tag, Space, message, Typography, DatePicker, Tabs, Descriptions, Tooltip, InputNumber } from 'antd';
+import { Card, Table, Button, Modal, Form, Input, Select, Tag, Space, message, Typography, DatePicker, Tabs, Descriptions, Tooltip, InputNumber, AutoComplete } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined, SearchOutlined, ReloadOutlined, EyeOutlined, SendOutlined, ExportOutlined } from '@ant-design/icons';
 import api from '../utils/api';
 import useAuthStore from '../store/auth';
@@ -288,8 +288,49 @@ export default function Orders() {
             </Form.Item>
           </Space>
           <Form.Item label="客户名称" name="customer_name" rules={[{ required: true, message: '请选择或输入客户' }]}>
-            <Select showSearch placeholder="选择客户或手动输入" allowClear
-              options={customerList.map(c => ({ label: `${c.name} (${c.code})`, value: c.name }))} />
+            <AutoComplete
+              placeholder="输入客户名称/编号/电话搜索，或手动输入新客户"
+              allowClear
+              style={{ width: '100%' }}
+              filterOption={(input, option) => {
+                if (!option || !option.customer) return false;
+                const c = option.customer;
+                const q = input.toLowerCase();
+                return (
+                  c.name?.toLowerCase().includes(q) ||
+                  c.code?.toLowerCase().includes(q) ||
+                  c.contact?.toLowerCase().includes(q) ||
+                  c.phone?.toLowerCase().includes(q)
+                );
+              }}
+              onSelect={(_, option) => {
+                // 选中已有客户时，自动填充联系人/电话/地址
+                const c = option?.customer;
+                if (c) {
+                  form.setFieldsValue({
+                    contact: c.contact || '',
+                    phone: c.phone || '',
+                    address: c.address || '',
+                  });
+                }
+              }}
+              onChange={(val) => {
+                // 用户手动改了值（不是从候选里选的），保留输入
+                form.setFieldValue('customer_name', val || '');
+              }}
+              options={customerList.map(c => ({
+                value: c.name,
+                label: (
+                  <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8 }}>
+                    <span><b>{c.name}</b> <Text type="secondary" style={{ fontSize: 12 }}>({c.code})</Text></span>
+                    <Text type="secondary" style={{ fontSize: 12 }}>
+                      {[c.contact, c.phone].filter(Boolean).join(' · ')}
+                    </Text>
+                  </div>
+                ),
+                customer: c,
+              }))}
+            />
           </Form.Item>
           <Space style={{ display: 'flex' }} wrap>
             <Form.Item name="contact" label="联系人" rules={[{ required: true, message: '请输入联系人' }]} style={{ width: 150 }}><Input /></Form.Item>
@@ -299,7 +340,7 @@ export default function Orders() {
             <TextArea rows={2} placeholder="完整收货地址" />
           </Form.Item>
           <Form.Item name="items" label="产品明细" rules={[{ required: true }]}>
-            <ProductItemsTable skuList={skuList} />
+            <ProductItemsTable skuList={skuList} form={form} />
           </Form.Item>
           <Form.Item name="remark" label="备注"><TextArea rows={2} placeholder="客户特殊要求等" /></Form.Item>
         </Form>
@@ -364,7 +405,7 @@ export default function Orders() {
 }
 
 // 产品明细组件
-function ProductItemsTable({ skuList }) {
+function ProductItemsTable({ skuList, form }) {
   return (
     <Form.List name="items">
       {(fields, { add, remove }) => (
@@ -372,14 +413,27 @@ function ProductItemsTable({ skuList }) {
           <Table size="small" pagination={false} dataSource={fields} rowKey="fieldKey"
             columns={[
               { title: '#', width: 40, render: (_, __, idx) => idx + 1 },
-              { title: 'SKU', width: 180, render: (_, field) => (
-                <Form.Item name={[field.name, 'sku_id']} noStyle>
-                  <Select showSearch placeholder="选择SKU" allowClear
-                    onChange={(v, opt) => {
-                      // 自动带出名称和单价
-                      // This is handled at form level
+              { title: 'SKU', width: 240, render: (_, field) => (
+                <Form.Item name={[field.name, 'sku_code']} noStyle>
+                  <SkuAutoComplete
+                    skuList={skuList}
+                    value={form.getFieldValue(['items', field.name, 'sku_code'])}
+                    onChange={(val) => {
+                      form.setFieldValue(['items', field.name, 'sku_code'], val);
+                      // 用户手动了输入，清空 sku_id（不再关联已有 SKU）
+                      const matched = skuList.find(s => s.code === val);
+                      if (!matched) form.setFieldValue(['items', field.name, 'sku_id'], null);
                     }}
-                    options={skuList.map(s => ({ label: `${s.code} - ${s.name}`, value: s.id, sku: s }))} />
+                    onSelect={(sku) => {
+                      // 选中已有 SKU：自动填充 id/名称/单价
+                      form.setFields([
+                        { name: ['items', field.name, 'sku_id'], value: sku.id },
+                        { name: ['items', field.name, 'sku_code'], value: sku.code },
+                        { name: ['items', field.name, 'product_name'], value: sku.name },
+                        { name: ['items', field.name, 'unit_price'], value: sku.default_price || 0 },
+                      ]);
+                    }}
+                  />
                 </Form.Item>
               )},
               { title: '名称', width: 150, render: (_, field) => (
@@ -400,5 +454,60 @@ function ProductItemsTable({ skuList }) {
         </div>
       )}
     </Form.List>
+  );
+}
+
+// SKU 自动补全组件：输入关键词实时过滤候选，选中后回填名称/单价
+function SkuAutoComplete({ skuList, value, onChange, onSelect }) {
+  const [inputVal, setInputVal] = useState(value || '');
+  // 同步外部 value
+  useEffect(() => { setInputVal(value || ''); }, [value]);
+
+  // 实时过滤：按 code/name/spec 包含输入关键字（最多50条防止卡顿）
+  const filterFn = (input) => {
+    if (!input) return skuList.slice(0, 50);
+    const q = input.toLowerCase().trim();
+    return skuList.filter(s =>
+      s.code?.toLowerCase().includes(q) ||
+      s.name?.toLowerCase().includes(q) ||
+      s.spec?.toLowerCase().includes(q)
+    ).slice(0, 50);
+  };
+
+  const [options, setOptions] = useState([]);
+
+  useEffect(() => {
+    setOptions(filterFn(inputVal));
+  }, [inputVal, skuList]);
+
+  return (
+    <AutoComplete
+      value={inputVal}
+      allowClear
+      size="small"
+      style={{ width: '100%' }}
+      placeholder="输入编码/名称/规格搜索"
+      onSearch={(val) => setInputVal(val)}
+      onChange={(val) => {
+        setInputVal(val || '');
+        onChange?.(val || '');
+      }}
+      onSelect={(_, option) => {
+        setInputVal(option.value);
+        onSelect?.(option.sku);
+        onChange?.(option.value);
+      }}
+      options={options.map(s => ({
+        value: s.code,
+        label: (
+          <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8 }}>
+            <span><b style={{ color: '#1677ff' }}>{s.code}</b> <Text style={{ fontSize: 12 }}>{s.name}</Text></span>
+            <Text type="secondary" style={{ fontSize: 12 }}>¥{Number(s.default_price || 0).toFixed(2)} / {s.unit || '台'}</Text>
+          </div>
+        ),
+        sku: s,
+      }))}
+      notFoundContent={inputVal ? <Text type="secondary" style={{ fontSize: 12 }}>无匹配SKU，可手动输入新编码</Text> : null}
+    />
   );
 }
