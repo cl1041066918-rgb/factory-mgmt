@@ -5,8 +5,32 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-// Render 部署时使用 DATA_DIR 环境变量指向持久磁盘，本地开发用默认路径
-const dataDir = process.env.DATA_DIR || path.join(__dirname, '..', 'data');
+// Render 部署时优先使用 DATA_DIR 环境变量，但必须确保目录可写
+// Render 免费实例没有持久磁盘，每次重启数据会清空
+function getDataDir() {
+  if (process.env.DATA_DIR) {
+    try {
+      fs.mkdirSync(process.env.DATA_DIR, { recursive: true });
+      // 测试是否可写
+      fs.accessSync(process.env.DATA_DIR, fs.constants.W_OK);
+      return process.env.DATA_DIR;
+    } catch (e) {
+      console.warn(`DATA_DIR (${process.env.DATA_DIR}) not writable, falling back: ${e.message}`);
+    }
+  }
+  // 默认用项目下的 data 目录（Render 上 process.cwd() 是 /opt/render/project/src）
+  const defaultDir = process.env.RENDER 
+    ? path.join(process.cwd(), 'data') 
+    : path.join(__dirname, '..', 'data');
+  try {
+    fs.mkdirSync(defaultDir, { recursive: true });
+    return defaultDir;
+  } catch (e) {
+    console.warn(`Default data dir failed, using /tmp: ${e.message}`);
+    return '/tmp';
+  }
+}
+const dataDir = getDataDir();
 const dbPath = path.join(dataDir, 'factory.db');
 
 let db;
