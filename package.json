@@ -4,8 +4,7 @@
   "private": true,
   "description": "工厂管理系统 - 成品/材料/包材库存 + 订单 + 账单 + 扫码出入库",
   "scripts": {
-    "build": "cd client && npm install && npm run build && cd ../server && npm install",
-    "build:render": "cd client && npm install && npm run build && cd ../server && (apt-get update -qq 2>/dev/null || true) && (apt-get install -y -qq python3 build-essential 2>/dev/null || true) && npm install",
+    "build": "cd client && npm install && npm run build && cd ../server && (apt-get update -qq 2>/dev/null || true) && (apt-get install -y -qq python3 build-essential 2>/dev/null || true) && npm install",
     "start": "node server/src/index.js",
     "dev": "cd server && npm run dev & cd client && npm run dev"
   },
