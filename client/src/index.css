@@ -1,0 +1,292 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  height: 100%;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans SC', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: #f0f2f5;
+}
+
+.page-container {
+  padding: 24px;
+}
+
+.card-margin {
+  margin-bottom: 16px;
+}
+
+.stat-card {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.low-stock-tag {
+  color: #ff4d4f !important;
+  font-weight: bold;
+}
+
+.table-action-btn {
+  padding: 0 8px;
+}
+
+.mobile-scan-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  gap: 16px;
+}
+
+.qr-preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: center;
+  padding: 24px;
+}
+
+.qr-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12px;
+  border: 1px solid #d9d9d9;
+  border-radius: 8px;
+  width: 200px;
+}
+
+.qr-item canvas {
+  margin-bottom: 8px;
+}
+
+/* ============ 移动端底部导航栏 ============ */
+.mobile-tabbar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 56px;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.06);
+  z-index: 100;
+  border-top: 1px solid #f0f0f0;
+  /* 兼容 iOS 安全区 */
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.mobile-tab-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  height: 100%;
+  cursor: pointer;
+  color: #999;
+  transition: color 0.2s;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+.mobile-tab-item.active {
+  color: #1677ff;
+}
+
+.mobile-tab-icon {
+  font-size: 22px;
+  line-height: 1;
+}
+
+.mobile-tab-label {
+  font-size: 11px;
+  margin-top: 2px;
+  line-height: 1;
+}
+
+/* 仓库子菜单列表项 */
+.mobile-warehouse-item {
+  display: flex;
+  align-items: center;
+  padding: 14px 24px;
+  font-size: 15px;
+  cursor: pointer;
+  border-bottom: 1px solid #f5f5f5;
+  color: #333;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.mobile-warehouse-item:active {
+  background: #f5f5f5;
+}
+
+.mobile-warehouse-item .anticon {
+  font-size: 18px;
+  color: #1677ff;
+}
+
+/* ============ 移动端响应式 ============ */
+@media (max-width: 768px) {
+  .page-container {
+    padding: 12px 10px;
+  }
+
+  .mobile-scan-container {
+    padding: 12px;
+  }
+
+  /* 让 Ant Design 组件在移动端更紧凑 */
+  .ant-card {
+    border-radius: 8px;
+  }
+
+  .ant-card-head {
+    min-height: 40px;
+    padding: 0 12px;
+  }
+
+  .ant-card-head-title {
+    font-size: 14px;
+  }
+
+  .ant-card-body {
+    padding: 12px;
+  }
+
+  /* 表格横向滚动优化 */
+  .ant-table-wrapper {
+    overflow-x: auto;
+  }
+
+  .ant-table-cell {
+    padding: 8px 6px !important;
+    font-size: 13px;
+  }
+
+  /* 弹窗全屏化 */
+  .ant-modal {
+    max-width: calc(100vw - 16px) !important;
+    margin: 8px auto !important;
+  }
+
+  .ant-modal .ant-modal-body {
+    padding: 16px 12px;
+    max-height: 70vh;
+    overflow-y: auto;
+  }
+
+  /* 表单在移动端占满宽度 */
+  .ant-input,
+  .ant-select,
+  .ant-input-number,
+  .ant-picker {
+    width: 100% !important;
+  }
+
+  .ant-form-item-label {
+    padding-bottom: 4px !important;
+  }
+
+  .ant-form-item {
+    margin-bottom: 12px !important;
+  }
+
+  /* 统计卡片移动端布局 */
+  .ant-statistic-title {
+    font-size: 12px !important;
+  }
+
+  .ant-statistic-content {
+    font-size: 18px !important;
+  }
+
+  /* 标题缩小 */
+  .ant-typography {
+    word-break: break-word;
+  }
+
+  h4.ant-typography {
+    font-size: 16px !important;
+  }
+
+  /* 按钮移动端优化 */
+  .ant-btn {
+    height: 36px;
+    padding: 0 12px;
+    font-size: 14px;
+  }
+
+  .ant-btn-sm {
+    height: 30px;
+    padding: 0 8px;
+    font-size: 12px;
+  }
+
+  /* 空间间距 */
+  .ant-space {
+    gap: 8px !important;
+  }
+
+  .ant-spaceCompact {
+    gap: 0 !important;
+  }
+}
+
+/* ============ 超小屏幕优化 (<=375px) ============ */
+@media (max-width: 375px) {
+  .page-container {
+    padding: 8px 6px;
+  }
+
+  .ant-card-body {
+    padding: 10px 8px;
+  }
+
+  .mobile-tab-label {
+    font-size: 10px;
+  }
+
+  .mobile-tab-icon {
+    font-size: 20px;
+  }
+}
+
+/* ============ 扫码弹窗移动端优化 ============ */
+@media (max-width: 768px) {
+  .ant-modal .ant-modal-header {
+    padding: 12px;
+  }
+
+  .ant-modal .ant-modal-footer {
+    padding: 10px 12px;
+  }
+
+  .ant-modal .ant-modal-footer .ant-btn {
+    flex: 1;
+  }
+}
+
+/* 触摸高亮移除 */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* 防止移动端长按选中 */
+.mobile-tab-item,
+.mobile-warehouse-item,
+.ant-btn,
+.ant-tag {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}

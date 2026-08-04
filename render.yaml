@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: factory-mgmt
+    runtime: node
+    plan: starter
+    buildCommand: npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATA_DIR
+        value: /opt/data
+    disk:
+      name: factory-data
+      mountPath: /opt/data
+      sizeGB: 1

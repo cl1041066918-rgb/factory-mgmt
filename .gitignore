@@ -1,0 +1,30 @@
+# Dependencies
+node_modules/
+
+# Build output
+client/dist/
+
+# Database
+server/data/
+*.db
+*.db-wal
+*.db-shm
+
+# Certificates
+*.pem
+*.key
+*.cert
+
+# Environment
+.env
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Vite temp files
+*.timestamp-*.mjs
+
+# Logs
+*.log
+npm-debug.log*

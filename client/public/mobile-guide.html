@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>手机访问指南 - 工厂管理系统</title>
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif; background: #f0f2f5; color: #333; }
+  .container { max-width: 680px; margin: 0 auto; padding: 24px 16px; }
+  .card { background: #fff; border-radius: 12px; padding: 28px 24px; margin-bottom: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
+  h1 { font-size: 24px; text-align: center; margin-bottom: 8px; }
+  h2 { font-size: 18px; margin-bottom: 12px; color: #1677ff; }
+  .subtitle { text-align: center; color: #888; font-size: 14px; margin-bottom: 24px; }
+  .qr-box { text-align: center; padding: 20px 0; }
+  .qr-box img, .qr-box canvas { border: 8px solid #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.12); }
+  .url-box { background: #f6f8fa; border: 1px solid #d9d9d9; border-radius: 8px; padding: 12px 16px; margin: 16px 0; font-size: 15px; word-break: break-all; text-align: center; }
+  .url-box code { font-size: 16px; font-weight: 600; color: #1677ff; }
+  .step { display: flex; gap: 12px; margin-bottom: 16px; align-items: flex-start; }
+  .step-num { width: 28px; height: 28px; background: #1677ff; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; flex-shrink: 0; }
+  .step-content { flex: 1; }
+  .step-content strong { display: block; margin-bottom: 4px; font-size: 15px; }
+  .step-content p { font-size: 14px; color: #666; line-height: 1.6; }
+  .warning { background: #fffbe6; border: 1px solid #ffe58f; border-radius: 8px; padding: 12px 16px; margin: 16px 0; font-size: 14px; color: #8c6d1f; }
+  .warning strong { color: #d48806; }
+  .accounts { width: 100%; border-collapse: collapse; margin-top: 12px; }
+  .accounts th, .accounts td { padding: 10px 12px; text-align: left; border-bottom: 1px solid #f0f0f0; font-size: 14px; }
+  .accounts th { background: #fafafa; font-weight: 600; }
+  .accounts td:first-child { font-weight: 600; }
+  .tabs { display: flex; gap: 8px; margin-bottom: 20px; }
+  .tab { flex: 1; text-align: center; padding: 10px; border-radius: 8px; cursor: pointer; font-size: 15px; font-weight: 500; border: 2px solid #d9d9d9; background: #fff; color: #666; }
+  .tab.active { border-color: #1677ff; background: #e6f4ff; color: #1677ff; }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+  @media (max-width: 480px) { .container { padding: 12px 8px; } .card { padding: 20px 16px; } }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>🏭 工厂管理系统</h1>
+  <p class="subtitle">手机访问指南</p>
+
+  <div class="card">
+    <div class="qr-box" id="qrBox"></div>
+    <div class="url-box">
+      <code id="urlText">https://192.168.124.3:3443</code>
+    </div>
+    <p style="text-align:center; color:#888; font-size:13px;">↑ 用手机相机扫上面的二维码，或手动输入地址</p>
+  </div>
+
+  <div class="card">
+    <h2>📱 手机使用步骤</h2>
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <strong>确保同一网络</strong>
+        <p>手机和电脑连接同一个 WiFi（同一局域网）</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <strong>扫码或输入地址</strong>
+        <p>用手机相机扫描上方二维码，或手动在浏览器输入 <code>https://192.168.124.3:3443</code></p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <strong>信任证书（仅首次）</strong>
+        <p>浏览器会提示"不安全"，点「高级」→「继续访问」。这是自签名证书，数据仍然加密，可放心使用。</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        <strong>登录使用</strong>
+        <p>输入账号密码登录，底部导航栏切换功能。仓库模块可点击「摄像头扫码」调用手机摄像头。</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="warning">
+    <strong>⚠️ 摄像头扫码说明：</strong>
+    出于安全限制，浏览器只在 HTTPS 环境下允许调用摄像头。所以手机必须通过 <code>https://192.168.124.3:3443</code> 访问，不能通过 HTTP。电脑端 localhost 不受此限制。
+  </div>
+
+  <div class="card">
+    <h2>🔐 登录账号</h2>
+    <table class="accounts">
+      <thead>
+        <tr><th>角色</th><th>用户名</th><th>密码</th><th>手机端用途</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>主管理者</td><td>admin</td><td>admin123</td><td>查看数据</td></tr>
+        <tr><td>生产线</td><td>production</td><td>prod123</td><td>扫码入库、领料出库</td></tr>
+        <tr><td>客服</td><td>service</td><td>service123</td><td>录订单、查库存</td></tr>
+        <tr><td>发货</td><td>shipping</td><td>ship123</td><td>扫码出库、标记发货</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>📲 各角色手机端操作</h2>
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('ship')">发货员</div>
+      <div class="tab" onclick="switchTab('prod')">生产线</div>
+      <div class="tab" onclick="switchTab('service')">客服</div>
+      <div class="tab" onclick="switchTab('admin')">管理员</div>
+    </div>
+
+    <div class="tab-content active" id="tab-ship">
+      <div class="step"><div class="step-num">1</div><div class="step-content"><strong>看待发货</strong><p>底部点「订单」→ 默认显示待发货列表</p></div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-content"><strong>扫码出库成品</strong><p>底部点「仓库」→ 选「成品仓」→ 点「扫码出库」→ 点「摄像头扫码」→ 扫产品二维码 → 输数量 → 关联订单 → 确认</p></div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-content"><strong>扫码出库包材</strong><p>仓库 → 选「包材仓」→ 扫码出纸箱/泡沫等</p></div></div>
+      <div class="step"><div class="step-num">4</div><div class="step-content"><strong>标记发货</strong><p>回到订单详情 → 点「标记发货」→ 填快递单号、选快递公司 → 确认</p></div></div>
+    </div>
+
+    <div class="tab-content" id="tab-prod">
+      <div class="step"><div class="step-num">1</div><div class="step-content"><strong>采购下单</strong><p>底部点「采购」→ 新增 → 选供应商、加材料明细 → 保存</p></div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-content"><strong>材料到货扫码入库</strong><p>仓库 → 选「材料仓」→ 扫码入库 → 扫材料二维码 → 输数量 → 关联采购单 → 确认</p></div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-content"><strong>生产领料出库</strong><p>仓库 → 选「材料仓」→ 扫码出库 → 扫码、输数量、备注用途</p></div></div>
+      <div class="step"><div class="step-num">4</div><div class="step-content"><strong>成品入库</strong><p>仓库 → 选「成品仓」→ 扫码入库 → 扫成品码、输数量</p></div></div>
+      <div class="step"><div class="step-num">5</div><div class="step-content"><strong>食堂采买</strong><p>底部点「食堂」→ 新增 → 填日期和食材明细</p></div></div>
+    </div>
+
+    <div class="tab-content" id="tab-service">
+      <div class="step"><div class="step-num">1</div><div class="step-content"><strong>录入订单</strong><p>底部点「订单」→ 新增 → 填客户信息、产品明细 → 保存</p></div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-content"><strong>查库存</strong><p>仓库 → 成品仓/包材仓 → 只能看不能操作</p></div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-content"><strong>录销售账单</strong><p>底部点「销售」→ 新增 → 选客户、加明细 → 保存</p></div></div>
+      <div class="step"><div class="step-num">4</div><div class="step-content"><strong>跟进订单</strong><p>订单列表 → 确认收货的改「已完成」，退货的改「退货中」</p></div></div>
+    </div>
+
+    <div class="tab-content" id="tab-admin">
+      <div class="step"><div class="step-num">1</div><div class="step-content"><strong>查看数据看板</strong><p>底部点「看板」→ 查看各状态订单数、库存统计、账单统计</p></div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-content"><strong>全部功能</strong><p>底部点「更多」→ 打开全部菜单，可访问基础数据、系统设置、操作日志等</p></div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-content"><strong>库存调整</strong><p>仓库 → 任一库存 → 点「调整」→ 输盘点后实际数量、填原因</p></div></div>
+      <div class="step"><div class="step-num">4</div><div class="step-content"><strong>建议电脑端操作</strong><p>管理员的数据录入、SKU维护、批量导入等操作建议在电脑端完成，更方便</p></div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>❓ 常见问题</h2>
+    <div class="step"><div class="step-num">Q</div><div class="step-content"><strong>手机打不开？</strong><p>确认电脑已启动系统（双击桌面「工厂管理系统.bat」），且手机和电脑在同一 WiFi。检查电脑防火墙是否放行了端口 3443。</p></div></div>
+    <div class="step"><div class="step-num">Q</div><div class="step-content"><strong>摄像头不能用？</strong><p>必须用 https:// 开头的地址访问（端口 3443）。如果还是不行，检查手机浏览器是否有摄像头权限，或换 Chrome 浏览器试试。</p></div></div>
+    <div class="step"><div class="step-num">Q</div><div class="step-content"><strong>提示"不安全"？</strong><p>这是正常的。自签名证书浏览器都会警告，点「高级」→「继续访问」即可。数据传输仍然是加密的。</p></div></div>
+    <div class="step"><div class="step-num">Q</div><div class="step-content"><strong>扫不了码怎么办？</strong><p>可以手动输入 SKU 编码（如 CP-001），点「识别」也能完成出入库操作。</p></div></div>
+  </div>
+</div>
+
+<script>
+  // Generate QR code
+  const url = 'https://192.168.124.3:3443';
+  try {
+    const qr = qrcode(0, 'M');
+    qr.addData(url);
+    qr.make();
+    document.getElementById('qrBox').innerHTML = qr.createImgTag(6);
+  } catch(e) {
+    // Fallback: use API
+    document.getElementById('qrBox').innerHTML = '<img src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=' + encodeURIComponent(url) + '" width="250" height="250" />';
+  }
+
+  function switchTab(name) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.querySelector('.tab[onclick*="' + name + '"]').classList.add('active');
+    document.getElementById('tab-' + name).classList.add('active');
+  }
+</script>
+</body>
+</html>
