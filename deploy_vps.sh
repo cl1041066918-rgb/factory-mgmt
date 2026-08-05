@@ -23,9 +23,15 @@ echo "  PORT     = $PORT"
 echo "=============================================="
 
 # ---------- 0. 环境检测 ----------
-if [ -f /etc/redhat-release ]; then
+if command -v dnf &>/dev/null; then
+  PKG_MGR=dnf
+  echo "[环境] 检测到 dnf（AlibabaLinux/Anolis/RHEL8+）"
+elif command -v yum &>/dev/null; then
   PKG_MGR=yum
-  echo "[环境] 检测到 RHEL/CentOS/AlibabaLinux，使用 yum"
+  echo "[环境] 检测到 yum"
+elif [ -f /etc/redhat-release ]; then
+  PKG_MGR=yum
+  echo "[环境] 检测到 RHEL/CentOS，使用 yum"
 else
   PKG_MGR=apt
   echo "[环境] 检测到 Debian/Ubuntu，使用 apt"
@@ -43,12 +49,12 @@ fi
 # ---------- 2. 安装 Node.js $NODE_VER ----------
 echo "== 2/7 安装 Node.js $NODE_VER =="
 if ! command -v node &>/dev/null || [ "$(node -v | cut -d. -f1 | tr -d v)" -lt 20 ]; then
-  if [ "$PKG_MGR" = "yum" ]; then
-    curl -fsSL https://rpm.nodesource.com/setup_20.x | bash -
-    yum install -y nodejs
-  else
+  if [ "$PKG_MGR" = "apt" ]; then
     curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
     apt-get install -y nodejs
+  else
+    curl -fsSL https://rpm.nodesource.com/setup_20.x | bash -
+    "$PKG_MGR" install -y nodejs
   fi
 else
   echo "Node 已安装: $(node -v)，跳过"
