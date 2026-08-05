@@ -39,11 +39,12 @@ fi
 
 # ---------- 1. 安装编译依赖（better-sqlite3 需要）----------
 echo "== 1/7 安装系统依赖（python3 / make / g++）=="
-if [ "$PKG_MGR" = "yum" ]; then
-  yum install -y python3 make gcc-c++ git
-else
+if [ "$PKG_MGR" = "apt" ]; then
   apt-get update -y
   apt-get install -y python3 make g++ git
+else
+  # dnf 或 yum（AlibabaLinux / CentOS / RHEL / Anolis 等）
+  "$PKG_MGR" install -y python3 make gcc-c++ git
 fi
 
 # ---------- 2. 安装 Node.js $NODE_VER ----------
